@@ -4,6 +4,7 @@ import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
 import '../../models/evaluation_session.dart';
 import 'sentence_evaluation_screen.dart';
+import 'evaluation_history_screen.dart';
 
 class EvaluationHomeScreen extends StatefulWidget {
   const EvaluationHomeScreen({super.key});
@@ -80,6 +81,14 @@ class _EvaluationHomeScreenState extends State<EvaluationHomeScreen> {
     }
   }
 
+  // Add this method to your _EvaluationHomeScreenState class
+  void _showEvaluationHistory() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const EvaluationHistoryScreen()),
+    );
+  }
+
   Future<int> _getUnevaluatedCount(ApiService apiService) async {
     try {
       // Get first page to check total count
@@ -151,6 +160,11 @@ class _EvaluationHomeScreenState extends State<EvaluationHomeScreen> {
       appBar: AppBar(
         title: const Text('Evaluation Dashboard'),
         actions: [
+          IconButton(
+            onPressed: _showEvaluationHistory,
+            icon: const Icon(Icons.history),
+            tooltip: 'View Evaluation History',
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadSessionsAndStats,

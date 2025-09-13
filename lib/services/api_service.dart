@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ApiService {
   static const String baseUrl =
       'https://sentiment-eval-backend.onrender.com/api';
+  //'http://127.0.0.1:8000/api';
 
   static const String tokenKey = 'auth_token';
 
@@ -56,6 +57,87 @@ class ApiService {
     }
 
     return headers;
+  }
+
+  // Get all evaluations made by current user
+  Future<List<Evaluation>> getMyEvaluations({int page = 1}) async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/evaluations/my_evaluations/?page=$page'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic> results = data['results'] ?? data;
+        return results.map((json) => Evaluation.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load evaluations: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error loading evaluations: $e');
+    }
+  }
+
+  // Update an existing evaluation
+  Future<Evaluation> updateEvaluation(
+    String evaluationId,
+    Evaluation evaluation,
+  ) async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.patch(
+        Uri.parse('$baseUrl/evaluations/$evaluationId/'),
+        headers: headers,
+        body: json.encode(evaluation.toJson()),
+      );
+
+      if (response.statusCode == 200) {
+        return Evaluation.fromJson(json.decode(response.body));
+      } else {
+        final errorData = json.decode(response.body);
+        throw Exception(
+          'Failed to update evaluation: ${errorData['detail'] ?? response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Error updating evaluation: $e');
+    }
+  }
+
+  // Delete an evaluation
+  Future<bool> deleteEvaluation(String evaluationId) async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.delete(
+        Uri.parse('$baseUrl/evaluations/$evaluationId/'),
+        headers: headers,
+      );
+
+      return response.statusCode == 204;
+    } catch (e) {
+      throw Exception('Error deleting evaluation: $e');
+    }
+  }
+
+  // Get a specific evaluation by ID
+  Future<Evaluation> getEvaluation(String evaluationId) async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/evaluations/$evaluationId/'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return Evaluation.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Failed to load evaluation: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error loading evaluation: $e');
+    }
   }
 
   // Handle HTTP responses

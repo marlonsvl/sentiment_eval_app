@@ -1,5 +1,6 @@
 class Sentence {
   final String id;
+  final String? sentenceId;
   final String text;
   final String reviewText;
   final int reviewId;
@@ -21,12 +22,14 @@ class Sentence {
     this.isEvaluated = false,
     this.bestModel,
     this.alternativeSolution,
+    this.sentenceId,
   });
 
   factory Sentence.fromJson(Map<String, dynamic> json) {
     try {
       return Sentence(
         id: _parseString(json['id'], 'id'),
+        sentenceId: _parseString(json['sentence_id'], 'sentence_id'),
         text: _parseString(json['review_sentence'], 'review_sentence'),
         reviewText: _parseString(json['review_text'] ?? '', 'review_text'),
         reviewId: _parseInt(json['review_id'], 'review_id'),
@@ -98,6 +101,7 @@ class Sentence {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'sentence_id': sentenceId,
       'review_sentence': text,
       'review_text': reviewText,
       'review_id': reviewId,

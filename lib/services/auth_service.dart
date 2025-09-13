@@ -6,6 +6,7 @@ import '../models/user.dart';
 
 class AuthService extends ChangeNotifier {
   static const String _baseUrl = 'https://sentiment-eval-backend.onrender.com';
+  //static const String _baseUrl = 'http://127.0.0.1:8000';
   static const _storage = FlutterSecureStorage();
 
   User? _currentUser;
